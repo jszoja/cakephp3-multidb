@@ -18,8 +18,11 @@ class UsersController extends AppController
      *
      * @return \Cake\Http\Response|void
      */
-    public function index()
+    public function index($db=null)
     {
+        if( $db )
+            $this->request->getSession()->write('company', $db );
+
         $users = $this->paginate($this->Users);
 
         $this->set(compact('users'));

@@ -1,10 +1,14 @@
 <?php
 namespace App\Model\Table;
 
+use Cake\Core\Configure;
+use Cake\Database\Exception\MissingConnectionException;
+use Cake\Datasource\ConnectionManager;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use Cake\Datasource\Exception\MissingDatasourceConfigException;
 
 /**
  * Users Model
@@ -20,6 +24,8 @@ use Cake\Validation\Validator;
  */
 class UsersTable extends Table
 {
+    private static $__coreDb = true;
+
 
     /**
      * Initialize method
@@ -34,7 +40,36 @@ class UsersTable extends Table
         $this->setTable('users');
         $this->setDisplayField('id');
         $this->setPrimaryKey('id');
+
     }
+
+
+    public static function defaultConnectionName()
+    {
+        if( self::$__coreDb )
+            return 'default';
+
+        try {
+            ConnectionManager::get('company');
+        } catch( MissingDatasourceConfigException $e )
+        {
+            self::__createCompanyConnection();
+        }
+
+
+        return 'company';
+    }
+
+
+    private static function __createCompanyConnection()
+    {
+        if( empty( $_SESSION['company'] ) )
+            throw new MissingConnectionException('Missing company session for DB connection!');
+        $dbConf = ConnectionManager::getConfig('default');
+        $dbConf['database'] = $_SESSION['company'];
+        ConnectionManager::setConfig( 'company', $dbConf );
+    }
+
 
     /**
      * Default validation rules.
@@ -78,4 +113,7 @@ class UsersTable extends Table
 
         return $rules;
     }
+
+
+
 }
