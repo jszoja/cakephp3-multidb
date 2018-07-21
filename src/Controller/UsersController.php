@@ -18,10 +18,13 @@ class UsersController extends AppController
      *
      * @return \Cake\Http\Response|void
      */
-    public function index($db=null)
+    public function index()
     {
-        if( $db )
-            $this->request->getSession()->write('company', $db );
+        // switch the database connection to passed query parameter
+        $db = $this->request->getQuery('db');
+        if( ! empty( $db) ) {
+            $this->_updateCompanyConnection( $db );
+        }
 
         $users = $this->paginate($this->Users);
 
