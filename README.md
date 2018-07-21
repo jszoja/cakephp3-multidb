@@ -1,5 +1,5 @@
 # Dynamic database connection in CakePHP 3.x
-This is a illustrates how your application can use separate database per model/table.
+This sample project illustrates how your application can use a separate database per model/table.
 
 * It is assumed that the all dynamically created datasource connections are on the same host as defined in the default datasource
 * The database name is passed within the session
@@ -25,10 +25,10 @@ You can amend the static variables to adjust other settings:
  private static $__CONNECTION_NAME = 'company';
  ```
  
- All tables which want to support this behavior must extend the BaseTable and define the if they want to use the default connection.
+ All tables which want to support this behavior must extend the BaseTable and specify if they want to use the default connection or the dynamic one based on the session.
  
  ## Baking models
- To make it easier you may want to customize your baking template for tables, to have them all extend the BaseTable rather than Table class. It is subject to your requirements.
- The customized template is placed in src/Template/Bake/Model/table.twig.
+ To make it easier you may want to customize your baking template for tables, to have them all extend the BaseTable rather than the Table class. It is subject to your requirements.
+ The customized template is placed in src/Template/Bake/Model/table.twig. From this location it is respected by the baking shell. Remove the file if you prefer the default shell. 
  
  Alternatively you can use the [theme](https://book.cakephp.org/3.0/en/bake/development.html#creating-a-bake-theme) for bake.
