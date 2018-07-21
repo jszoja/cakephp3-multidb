@@ -1,51 +1,54 @@
-# CakePHP Application Skeleton
+# Dynamic database connection in CakePHP 3.x
+This sample project illustrates how your application can use a separate database per model/table.
 
-[![Build Status](https://img.shields.io/travis/cakephp/app/master.svg?style=flat-square)](https://travis-ci.org/cakephp/app)
-[![Total Downloads](https://img.shields.io/packagist/dt/cakephp/app.svg?style=flat-square)](https://packagist.org/packages/cakephp/app)
+* It is assumed that the all dynamically created datasource connections are on the same host as defined in the default datasource
+* The database name is passed within the session
 
-A skeleton for creating applications with [CakePHP](https://cakephp.org) 3.x.
+## How it works
+AppController::beforeFilter() creates the company datasource on the fly based on the session variable:
+```php
+ /**
+  * Create the company connection based on the session var
+  */
+private function __createCompanyConnection()
+{
+    $company = $this->request->getSession()->read('company');
+    if( empty($company) )
+        return;
 
-The framework source code can be found here: [cakephp/cakephp](https://github.com/cakephp/cakephp).
-
-## Installation
-
-1. Download [Composer](https://getcomposer.org/doc/00-intro.md) or update `composer self-update`.
-2. Run `php composer.phar create-project --prefer-dist cakephp/app [app_name]`.
-
-If Composer is installed globally, run
-
-```bash
-composer create-project --prefer-dist cakephp/app
+    $dbConf = ConnectionManager::getConfig('default');
+    $dbConf['database'] = $company;
+    ConnectionManager::setConfig( 'company', $dbConf );
+}
 ```
 
-In case you want to use a custom app dir name (e.g. `/myapp/`):
-
-```bash
-composer create-project --prefer-dist cakephp/app myapp
+Relevant Table classes require company connection within Table::defaultConnectionName():
+```php
+public static function defaultConnectionName()
+{
+    return 'company';
+}
 ```
-
-You can now either use your machine's webserver to view the default home page, or start
-up the built-in webserver with:
-
-```bash
-bin/cake server -p 8765
+ 
+ 
+ ## Working sample
+#### 1. Create two databases with the 'users' table and populate theirs records:
+ ```mysql
+ CREATE TABLE `users` (
+   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+   `username` varchar(45) NOT NULL,
+   `active` tinyint(1) unsigned NOT NULL DEFAULT '1',
+   PRIMARY KEY (`id`),
+   UNIQUE KEY `username_UNIQUE` (`username`),
+   UNIQUE KEY `id_UNIQUE` (`id`)
+ ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
 ```
+#### 2. Go to url /users/index?db=client1
+Page should list users from the database **client1**
+#### 3. Go to url /users/index
+Page should list users from the database **client1** as we set this database in session in the previous step.
+#### 4. Go to url /users/index?db=core
+Page should list users from the default database this time
+ 
 
-Then visit `http://localhost:8765` to see the welcome page.
-
-## Update
-
-Since this skeleton is a starting point for your application and various files
-would have been modified as per your needs, there isn't a way to provide
-automated upgrades, so you have to do any updates manually.
-
-## Configuration
-
-Read and edit `config/app.php` and setup the `'Datasources'` and any other
-configuration relevant for your application.
-
-## Layout
-
-The app skeleton uses a subset of [Foundation](http://foundation.zurb.com/) (v5) CSS
-framework by default. You can, however, replace it with any other library or
-custom styles.
+ 
