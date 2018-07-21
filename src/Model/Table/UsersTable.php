@@ -2,6 +2,7 @@
 namespace App\Model\Table;
 
 use Cake\ORM\RulesChecker;
+use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
 /**
@@ -16,7 +17,7 @@ use Cake\Validation\Validator;
  * @method \App\Model\Entity\User[] patchEntities($entities, array $data, array $options = [])
  * @method \App\Model\Entity\User findOrCreate($search, callable $callback = null, $options = [])
  */
-class UsersTable extends BaseTable
+class UsersTable extends Table
 {
 
     /**
@@ -35,6 +36,11 @@ class UsersTable extends BaseTable
 
     }
 
+
+    public static function defaultConnectionName()
+    {
+        return 'company';
+    }
 
 
     /**
@@ -79,7 +85,4 @@ class UsersTable extends BaseTable
 
         return $rules;
     }
-
-
-
 }
