@@ -16,8 +16,19 @@ use Cake\Datasource\Exception\MissingDatasourceConfigException;
  */
 class BaseTable extends Table
 {
+    /**
+     * @var bool if TRUE then table will use the default datasource connection
+     */
     protected static $_defaultDb = false;
+
+    /**
+     * @var string name of the session variable, which contains database name for a connection
+     */
     private static $__SESSION_CONNECTION_VAR = 'company';
+
+    /**
+     * @var string name of the datasource connection for ConnectionManager
+     */
     private static $__CONNECTION_NAME = 'company';
 
 
