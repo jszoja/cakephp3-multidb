@@ -35,7 +35,7 @@ class BaseTable extends Table
     public static function defaultConnectionName()
     {
         // using default connection
-        if( self::$_defaultDb )
+        if( static::$_defaultDb )
             return 'default';
 
         try {
